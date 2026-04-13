@@ -88,6 +88,12 @@ body {
   color: var(--text-secondary);
 }
 
+.titlebar-brand span {
+  background: linear-gradient(90deg, #ffffff, #999999);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .titlebar-logo {
   height: 14px;
   width: auto;
@@ -463,7 +469,7 @@ body {
 
 /* ── Annotation Toolbar (Floating Glass Pill) ── */
 .annotation-toolbar {
-  position: absolute; top: 76px; left: 50%; transform: translateX(-50%);
+  position: absolute; top: 88px; left: 50%; transform: translateX(-50%);
   background: var(--toolbar-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
