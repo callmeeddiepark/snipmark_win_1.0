@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnipMark - Precise UI Marker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div data-tauri-drag-region class="titlebar">
+        <div class="titlebar-brand">
+            <img src="snipmark_logo.png" alt="" class="titlebar-logo">
+            <span>SnipMark</span>
+        </div>
+        <div class="titlebar-controls">
+            <div class="titlebar-button" id="titlebar-minimize">
+                <svg width="12" height="12" viewBox="0 0 12 12"><rect x="3" y="5.5" width="6" height="1" fill="currentColor"/></svg>
+            </div>
+            <div class="titlebar-button" id="titlebar-maximize">
+                <svg width="12" height="12" viewBox="0 0 12 12"><rect x="3.5" y="3.5" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            </div>
+            <div class="titlebar-button" id="titlebar-close">
+                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3L9 9M9 3L3 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+        </div>
+    </div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="snipmark_logo.png" alt="SnipMark" class="brand-logo">
+            </div>
+            
+            <div class="sidebar-scroll">
+                <section class="sidebar-section">
+                    <div class="section-header">
+                        <h3 class="section-title">MARKERS</h3>
+                        <div id="sideMarkerColorBtn" class="marker-color-preview" title="기본 마커 색상 변경"></div>
+                    </div>
+                    <div id="markerList" class="marker-list">
+                        <div class="empty">이미지를 불러오세요</div>
+                    </div>
+                </section>
+
+                <section class="sidebar-section">
+                    <h3 class="section-title">CONTROL</h3>
+                    <div class="control-grid">
+                        <button id="undoBtn" class="action-btn">되돌리기</button>
+                        <button id="clearBtn" class="action-btn">전체 삭제</button>
+                    </div>
+                </section>
+            </div>
+
+            <section class="sidebar-section export-section">
+                <h3 class="section-title">EXPORT</h3>
+                <div class="export-grid">
+                    <button id="exportImageBtn" class="export-btn">이미지 저장</button>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="toolbar">
+                <div id="tabs" class="tabs"></div>
+                <button id="newTabBtn" class="tab-btn add-tab">+</button>
+                
+                <div class="toolbar-center">
+                    <button id="reopenTabBtn" class="icon-btn-small" title="닫은 탭 다시 열기">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    </button>
+                    <span id="filenameDisplay" class="filename">이미지를 불러오세요</span>
+                </div>
+
+                <div class="toolbar-right">
+                    <div class="zoom-controls">
+                        <button id="zoomOutBtn">-</button>
+                        <span id="zoomLevel">100%</span>
+                        <button id="zoomInBtn">+</button>
+                    </div>
+                    <button id="fitBtn" class="icon-btn" title="맞춤">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                    </button>
+                    <div class="divider"></div>
+                    <button id="rotateBtn" class="icon-btn" title="회전">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 12c0 3.86-3.14 7-7 7-1.9 0-3.62-.76-4.88-1.99l-1.42 1.42C7.2 19.89 9.39 21 12 21c4.97 0 9-4.03 9-9h3l-4-4-4 4h3zM12 5c1.9 0 3.62.76 4.88 1.99l1.42-1.42C16.8 4.11 14.61 3 12 3 7.03 3 3 7.03 3 12H0l4 4 4-4H5c0-3.86 3.14-7 7-7z"/>
+                        </svg>
+                    </button>
+                    <div class="divider"></div>
+                </div>
+            </header>
+
+            <!-- Annotation Toolbar -->
+            <div id="annotationToolbar" class="annotation-toolbar" style="display:none;">
+                <div class="tool-group">
+                    <button id="toolSelectBtn" class="tool-btn active" title="선택">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-7 2-4 7z"/><path d="M12 14l5 5"/></svg>
+                    </button>
+                    <div class="tool-divider"></div>
+                    <button id="toolSketchBtn" class="tool-btn" title="스케치">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </button>
+                    <button id="toolDrawBtn" class="tool-btn" title="그리기">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                    </button>
+                    <button id="toolHighlightBtn" class="tool-btn" title="하이라이트">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+                    </button>
+                    <div class="tool-divider"></div>
+                    <div class="tool-dropdown">
+                        <button id="toolShapeBtn" class="tool-btn" title="도형">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4" stroke-dasharray="3 2"/></svg>
+                        </button>
+                        <div class="dropdown-content">
+                            <button data-shape="rect">사각형</button>
+                            <button data-shape="circle">원</button>
+                            <button data-shape="arrow">화살표</button>
+                        </div>
+                    </div>
+                    </div>
+
+                <div class="tool-group style-group">
+                    <div class="color-picker" id="colorPickerContainer">
+                        <button id="activeColorBtn" class="color-swatch" style="background: var(--marker-green);"></button>
+                        <div id="colorWheelDropdown" class="color-wheel-dropdown">
+                            <div class="wheel-container">
+                                <canvas id="colorWheelCanvas" width="160" height="160"></canvas>
+                                <div id="colorWheelCursor" class="wheel-cursor"></div>
+                            </div>
+                            <div class="lightness-container">
+                                <input type="range" id="lightnessSlider" class="lightness-slider" min="0" max="100" value="50">
+                            </div>
+                        </div>
+                    </div>
+                    <select id="strokeWidthSelect" class="style-select">
+                        <option value="2">가늘게</option>
+                        <option value="4" selected>보통</option>
+                        <option value="8">굵게</option>
+                        <option value="12">매우 굵게</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div id="canvasWrapper" class="canvas-wrapper">
+                <!-- Drop Zone -->
+                <div id="dropZone" class="drop-zone">
+                    <div class="drop-content">
+                        <p class="drop-text">스크린샷/이미지를 드래그하거나 파일을 선택하세요</p>
+                        <button id="selectFileBtn" class="select-btn">파일 열기</button>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                    </div>
+                </div>
+
+                <!-- Image Stage -->
+                <div id="imageStage" class="image-stage" style="display:none;" draggable="false">
+                    <div id="imageContainer" class="image-container" draggable="false">
+                        <img id="mainImage" src="" alt="" draggable="false">
+                        <div id="markersLayer" class="markers-layer"></div>
+                        <div id="dragSelection" class="drag-selection" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="adBanner" class="ad-banner" data-ad-id="">
+                <img id="adImage" src="" alt="" style="display:none; max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;">
+                <span id="adFallback">Your Ad Here</span>
+            </div>
+
+            <div class="floating-actions">
+        <button id="themeToggleBtn" class="floating-btn theme-btn" title="테마 변경">🌗</button>
+        <button id="floatingHelpBtn" class="floating-btn" title="SnipMark 사용가이드">?</button>
+    </div>
+        </main>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="instructionModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>SnipMark 사용 방법</h2>
+            <div class="modal-body">
+                <div class="help-section">
+                    <ol>
+                        <li><strong>불러오기:</strong> 이미지를 드래그 앤 드롭하거나 클릭하여 추가합니다.</li>
+                        <li><strong>마킹하기:</strong> 원하는 영역을 드래그해 숫자 마크를 생성합니다.</li>
+                        <li><strong>편집하기:</strong> 마크를 클릭하여 위치와 크기를 수정합니다.</li>
+                        <li><strong>내보내기:</strong> ⌘+C / ⌘+V로 즉시 사용하거나 이미지로 저장합니다.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalBtn" class="modal-confirm">시작하기</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Magnifier -->
+    <div id="magnifier" class="magnifier" style="display: none;">
+        <canvas id="magnifierCanvas"></canvas>
+        <div class="crosshair"></div>
+    </div>
+
+    <script src="app.js"></script>
+
+    <!-- Canvas drawing textures SVG filters -->
+    <svg style="display:none">
+        <defs>
+            <filter id="pencilFilter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
+            </filter>
+            <filter id="crayonFilter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.15" numOctaves="2" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
+            </filter>
+            <filter id="brushFilter">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" result="blur" />
+                <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" result="noise" />
+                <feDisplacementMap in="blur" in2="noise" scale="2" />
+            </filter>
+        </defs>
+    </svg>
+</body>
+</html>
