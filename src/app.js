@@ -1,12 +1,18 @@
 // Tauri Window Controls
-if (window.__TAURI__) {
-  const { getCurrentWindow } = window.__TAURI__.window;
-  const appWindow = getCurrentWindow();
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.__TAURI__) {
+    const { getCurrentWindow } = window.__TAURI__.window;
+    const appWindow = getCurrentWindow();
 
-  document.getElementById('titlebar-minimize').addEventListener('click', () => appWindow.minimize());
-  document.getElementById('titlebar-maximize').addEventListener('click', () => appWindow.toggleMaximize());
-  document.getElementById('titlebar-close').addEventListener('click', () => appWindow.close());
-}
+    const minBtn = document.getElementById('titlebar-minimize');
+    const maxBtn = document.getElementById('titlebar-maximize');
+    const closeBtn = document.getElementById('titlebar-close');
+
+    if (minBtn) minBtn.addEventListener('click', () => appWindow.minimize());
+    if (maxBtn) maxBtn.addEventListener('click', () => appWindow.toggleMaximize());
+    if (closeBtn) closeBtn.addEventListener('click', () => appWindow.close());
+  }
+});
 
 const state = {
   tabs: [],
